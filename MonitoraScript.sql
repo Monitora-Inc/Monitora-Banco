@@ -1,105 +1,155 @@
 -- Criação do usuário e banco
-CREATE USER 'Monitora'@'localhost' IDENTIFIED BY 'monitora@1234';
-GRANT SELECT, INSERT, UPDATE, DELETE ON Monitora.* TO 'Monitora'@'localhost';
+CREATE USER IF NOT EXISTS 'monitora'@'localhost' IDENTIFIED BY 'monitora@1234';
+CREATE DATABASE IF NOT EXISTS monitora;
+GRANT SELECT, INSERT, UPDATE, DELETE ON monitora.* TO 'monitora'@'localhost';
 FLUSH PRIVILEGES;
 
-CREATE DATABASE IF NOT EXISTS Monitora;
-USE Monitora;
+CREATE DATABASE IF NOT EXISTS monitora;
+USE monitora;
 
--- Endereços
-CREATE TABLE IF NOT EXISTS Endereco (
-  idEndereco INT AUTO_INCREMENT PRIMARY KEY,
+-- -----------------------------------------------------
+-- Tabela endereco
+-- -----------------------------------------------------
+CREATE TABLE endereco (
+  idEndereco INT NOT NULL AUTO_INCREMENT,
   pais VARCHAR(60),
   estado VARCHAR(60),
   cidade VARCHAR(60),
   bairro VARCHAR(60),
   rua VARCHAR(60),
   numero INT,
-  complemento VARCHAR(45)
+  complemento VARCHAR(45),
+  PRIMARY KEY (idEndereco)
 );
 
--- Empresas
-CREATE TABLE IF NOT EXISTS Empresas(
-  idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
+-- -----------------------------------------------------
+-- Tabela empresas
+-- -----------------------------------------------------
+CREATE TABLE empresas (
+  idEmpresa INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(100) NOT NULL UNIQUE,
+  senha VARCHAR(45) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  cnpj VARCHAR(20) NOT NULL UNIQUE,
+  ativo TINYINT(1),
+  aprovada TINYINT(1),
+  data_cadastro DATETIME,
+  fotoDePerfil VARCHAR(100) UNIQUE,
+  PRIMARY KEY (idEmpresa)
+);
+
+-- -----------------------------------------------------
+-- Tabela cargos
+-- -----------------------------------------------------
+CREATE TABLE cargos (
+  idCargo INT NOT NULL AUTO_INCREMENT,
+  nome_cargo VARCHAR(45) NOT NULL UNIQUE,
+  PRIMARY KEY (idCargo)
+);
+
+-- -----------------------------------------------------
+-- Tabela usuarios
+-- -----------------------------------------------------
+CREATE TABLE usuarios (
+  idUsuario INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(100) NOT NULL,
-  cnpj VARCHAR(20) UNIQUE,
-  ativo TINYINT(1) NOT NULL DEFAULT 1,
-  aprovada TINYINT(1) NOT NULL DEFAULT 0,
-  data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
-  fkEndereco INT,
-  CONSTRAINT fk_Empresa_Endereco FOREIGN KEY (fkEndereco) REFERENCES Endereco (idEndereco)
+  sobrenome VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  senha VARCHAR(20) NOT NULL,
+  fotoUser VARCHAR(100) UNIQUE,
+  telefone CHAR(11) UNIQUE,
+  data_cadastro DATETIME,
+  FkCargo INT NOT NULL,
+  FkEmpresa INT NOT NULL,
+  PRIMARY KEY (idUsuario),
+  CONSTRAINT fk_usuarios_cargo FOREIGN KEY (FkCargo) REFERENCES cargos(idCargo),
+  CONSTRAINT fk_usuarios_empresa FOREIGN KEY (FkEmpresa) REFERENCES empresas(idEmpresa)
 );
 
--- Data Centers
-CREATE TABLE IF NOT EXISTS DataCenters(
-  idDataCenter INT AUTO_INCREMENT PRIMARY KEY,
-  data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
-  fkEmpresa INT NOT NULL,
-  fkEndereco INT NOT NULL,
-  CONSTRAINT fk_DataCenter_Empresa FOREIGN KEY (fkEmpresa) REFERENCES Empresas (idEmpresa),
-  CONSTRAINT fk_DataCenter_Endereco FOREIGN KEY (fkEndereco) REFERENCES Endereco (idEndereco)
+-- -----------------------------------------------------
+-- Tabela datacenters
+-- -----------------------------------------------------
+CREATE TABLE datacenters (
+  idDataCenter INT NOT NULL AUTO_INCREMENT,
+  data_cadastro DATETIME,
+  FkEmpresa INT NOT NULL,
+  FkEndereco INT NOT NULL,
+  PRIMARY KEY (idDataCenter),
+  CONSTRAINT fk_datacenter_empresa FOREIGN KEY (FkEmpresa) REFERENCES empresas(idEmpresa),
+  CONSTRAINT fk_datacenter_endereco FOREIGN KEY (FkEndereco) REFERENCES endereco(idEndereco)
 );
 
--- Servidores
-CREATE TABLE IF NOT EXISTS Servidores (
-  idServidor INT AUTO_INCREMENT PRIMARY KEY,
+-- -----------------------------------------------------
+-- Tabela servidores
+-- -----------------------------------------------------
+CREATE TABLE servidores (
+  idServidor INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(100) NOT NULL,
-  data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
-  fkEndereco INT,
-  fkDataCenter INT NOT NULL,
-  CONSTRAINT fk_Servidor_Endereco FOREIGN KEY (fkEndereco) REFERENCES Endereco (idEndereco),
-  CONSTRAINT fk_Servidor_DataCenter FOREIGN KEY (fkDataCenter) REFERENCES DataCenters (idDataCenter)
+  data_cadastro DATETIME,
+  FkDataCenter INT NOT NULL,
+  PRIMARY KEY (idServidor),
+  CONSTRAINT fk_servidor_datacenter FOREIGN KEY (FkDataCenter) REFERENCES datacenters(idDataCenter)
 );
 
--- Permissões
-CREATE TABLE IF NOT EXISTS Permissoes (
-  idPermissao INT AUTO_INCREMENT PRIMARY KEY,
-  root TINYINT(1) NOT NULL DEFAULT 0,
-  admin TINYINT(1) NOT NULL DEFAULT 0
+-- -----------------------------------------------------
+-- Tabela nome_componente
+-- -----------------------------------------------------
+CREATE TABLE nome_componente (
+  id INT NOT NULL AUTO_INCREMENT,
+  componente VARCHAR(45) NOT NULL UNIQUE,
+  PRIMARY KEY (id)
 );
 
--- Cargos
-CREATE TABLE IF NOT EXISTS Cargos (
-  idCargo INT AUTO_INCREMENT PRIMARY KEY,
-  nome_cargo VARCHAR(45) NOT NULL,
-  nivel_acesso INT NOT NULL,
-  CONSTRAINT fk_Cargo_Permissao FOREIGN KEY (nivel_acesso) REFERENCES Permissoes (idPermissao)
+-- -----------------------------------------------------
+-- Tabela parametros
+-- -----------------------------------------------------
+CREATE TABLE parametros (
+  id INT NOT NULL AUTO_INCREMENT,
+  limite INT NOT NULL,
+  PRIMARY KEY (id)
+);
+-- -----------------------------------------------------
+-- Tabela medida
+-- -----------------------------------------------------
+CREATE TABLE medida (
+  id INT NOT NULL AUTO_INCREMENT,
+  unidade_de_medida VARCHAR(5) NOT NULL,
+  PRIMARY KEY (id)
 );
 
--- Unidades de Medida
-CREATE TABLE IF NOT EXISTS Unidade_de_Medidas (
-  idMedida INT AUTO_INCREMENT PRIMARY KEY,
-  nomeMedida VARCHAR(45) NOT NULL
+-- -----------------------------------------------------
+-- Tabela Permissoes
+-- -----------------------------------------------------
+CREATE TABLE permissoes (
+  idPermissao INT NOT NULL AUTO_INCREMENT,
+  nomePermissao VARCHAR(45) NOT NULL UNIQUE,
+  PRIMARY KEY (idPermissao)
 );
 
--- Componentes Monitorados
-CREATE TABLE IF NOT EXISTS Componentes_Monitorados (
-  idComponente INT AUTO_INCREMENT PRIMARY KEY,
-  nome_componente VARCHAR(45) NOT NULL,
-  alerta TINYINT(1) NOT NULL DEFAULT 0,
-  fkMedida INT NOT NULL,
-  CONSTRAINT fk_Componente_Medida FOREIGN KEY (fkMedida) REFERENCES Unidade_de_Medidas (idMedida)
+-- -----------------------------------------------------
+-- Tabela componentes_monitorados
+-- -----------------------------------------------------
+CREATE TABLE componentes_monitorados (
+  idComponente INT NOT NULL AUTO_INCREMENT,
+  nome_componente_id INT NOT NULL,
+  servidores_idServidor INT NOT NULL,
+  medida_id INT NOT NULL,
+  parametros_id INT NOT NULL,
+  PRIMARY KEY (idComponente),
+  CONSTRAINT fk_comp_nome FOREIGN KEY (nome_componente_id) REFERENCES nome_componente(id),
+  CONSTRAINT fk_comp_servidor FOREIGN KEY (servidores_idServidor) REFERENCES servidores(idServidor),
+  CONSTRAINT fk_comp_medida FOREIGN KEY (medida_id) REFERENCES medida(id),
+  CONSTRAINT fk_comp_parametros FOREIGN KEY (parametros_id) REFERENCES parametros(id)
 );
 
--- Parâmetros
-CREATE TABLE IF NOT EXISTS Parametros (
-  idParametro INT AUTO_INCREMENT PRIMARY KEY,
-  fkServidor INT NOT NULL,
-  fkComponente INT NOT NULL,
-  CONSTRAINT fk_Parametro_Servidor FOREIGN KEY (fkServidor) REFERENCES Servidores (idServidor),
-  CONSTRAINT fk_Parametro_Componente FOREIGN KEY (fkComponente) REFERENCES Componentes_Monitorados (idComponente)
-);
-
--- Usuários
-CREATE TABLE IF NOT EXISTS Usuarios (
-  idUsuario INT AUTO_INCREMENT PRIMARY KEY,
-  nome VARCHAR(100) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  senha VARCHAR(255) NOT NULL,
-  ativo TINYINT(1) NOT NULL DEFAULT 1,
-  data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
-  fkCargo INT NOT NULL,
-  fkEmpresa INT NOT NULL,
-  CONSTRAINT fk_Usuario_Cargo FOREIGN KEY (fkCargo) REFERENCES Cargos (idCargo),
-  CONSTRAINT fk_Usuario_Empresa FOREIGN KEY (fkEmpresa) REFERENCES Empresas (idEmpresa)
+-- -----------------------------------------------------
+-- Tabela permissoes_has_cargos
+-- -----------------------------------------------------
+CREATE TABLE permissoes_has_cargos (
+  id INT AUTO_INCREMENT,
+  permissoes_idPermissao INT NOT NULL,
+  cargos_idCargo INT NOT NULL,
+  PRIMARY KEY (id, permissoes_idPermissao, cargos_idCargo),
+  CONSTRAINT fk_phc_permissao FOREIGN KEY (permissoes_idPermissao) REFERENCES permissoes(idPermissao),
+  CONSTRAINT fk_phc_cargo FOREIGN KEY (cargos_idCargo) REFERENCES cargos(idCargo)
 );
