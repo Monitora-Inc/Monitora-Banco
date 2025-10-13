@@ -29,11 +29,11 @@ CREATE TABLE endereco (
 CREATE TABLE empresas (
   idEmpresa INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(100) NOT NULL UNIQUE,
-  senha VARCHAR(45) NOT NULL,
+  senha VARCHAR(255) NOT NULL,
   cnpj VARCHAR(20) NOT NULL UNIQUE,
   ativo TINYINT(1),
   aprovada TINYINT(1),
-  data_cadastro DATETIME,
+  data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   fotoDePerfil VARCHAR(100) UNIQUE,
   PRIMARY KEY (idEmpresa)
 );
@@ -57,7 +57,7 @@ CREATE TABLE usuarios (
   nome VARCHAR(100) NOT NULL,
   sobrenome VARCHAR(50) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
-  senha VARCHAR(20) NOT NULL,
+  senha VARCHAR(255) NOT NULL,
   telefone CHAR(11) NOT NULL UNIQUE,
   fotoUser VARCHAR(100) UNIQUE,
   data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -179,7 +179,7 @@ BEGIN
 	
     INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('ADMINISTRADOR', NEW.idEmpresa);
 	SET adminId = LAST_INSERT_ID();
-    
+
     INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('Usuario', NEW.idEmpresa);
     SET usuarioId = LAST_INSERT_ID();
 	
