@@ -3,10 +3,10 @@ CREATE USER IF NOT EXISTS 'monitora'@'localhost' IDENTIFIED BY 'monitora@1234';
 CREATE DATABASE IF NOT EXISTS monitora;
 GRANT SELECT, INSERT, UPDATE, DELETE ON monitora.* TO 'monitora'@'localhost';
 FLUSH PRIVILEGES;
+drop database monitora;
 
 CREATE DATABASE IF NOT EXISTS monitora;
 USE monitora;
-
 -- -----------------------------------------------------
 -- Tabela endereco
 -- -----------------------------------------------------
@@ -25,11 +25,11 @@ CREATE TABLE endereco (
 -- -----------------------------------------------------
 -- Tabela empresas
 -- -----------------------------------------------------
+
 CREATE TABLE empresas (
   idEmpresa INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(100) NOT NULL UNIQUE,
   senha VARCHAR(45) NOT NULL,
-  email VARCHAR(100) NOT NULL UNIQUE,
   cnpj VARCHAR(20) NOT NULL UNIQUE,
   ativo TINYINT(1),
   aprovada TINYINT(1),
@@ -43,7 +43,9 @@ CREATE TABLE empresas (
 -- -----------------------------------------------------
 CREATE TABLE cargos (
   idCargo INT NOT NULL AUTO_INCREMENT,
-  nome_cargo VARCHAR(45) NOT NULL UNIQUE,
+  nome_cargo VARCHAR(45) NOT NULL,
+  FkEmpresa INT NOT NULL,
+  CONSTRAINT fk_cargo_empresa FOREIGN KEY (FkEmpresa) REFERENCES empresas(idEmpresa),
   PRIMARY KEY (idCargo)
 );
 
@@ -56,9 +58,9 @@ CREATE TABLE usuarios (
   sobrenome VARCHAR(50) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
   senha VARCHAR(20) NOT NULL,
+  telefone CHAR(11) NOT NULL UNIQUE,
   fotoUser VARCHAR(100) UNIQUE,
-  telefone CHAR(11) UNIQUE,
-  data_cadastro DATETIME,
+  data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FkCargo INT NOT NULL,
   FkEmpresa INT NOT NULL,
   PRIMARY KEY (idUsuario),
@@ -153,3 +155,44 @@ CREATE TABLE permissoes_has_cargos (
   CONSTRAINT fk_phc_permissao FOREIGN KEY (permissoes_idPermissao) REFERENCES permissoes(idPermissao),
   CONSTRAINT fk_phc_cargo FOREIGN KEY (cargos_idCargo) REFERENCES cargos(idCargo)
 );
+
+INSERT INTO monitora.permissoes (nomePermissao) VALUES
+	("CadastrarFuncionario"), -- Cadastrar novos funcionarios
+    ("RemoverFuncionario"), -- Remover o cadastro dos funcionarios
+    ("EditarCargoFuncionario"), -- Editar o cargo de cada usuario
+    ("AdicionarCargos"), -- Adicionar novos cargos
+    ("ModificarCargos"), -- Modificar os cargos existentes
+    ("DeletarCargos"), -- Deletar cargos
+    ("EditarPerfil"); -- Editar as proprias informações
+
+-- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
+DELIMITER $$
+
+CREATE TRIGGER cargos
+AFTER INSERT ON empresas
+FOR EACH ROW
+BEGIN
+
+	-- Criando variaveis para automação funcionar da maneira correta
+	DECLARE adminId INT;
+    DECLARE usuarioId INT;
+	
+    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('ADMINISTRADOR', NEW.idEmpresa);
+	SET adminId = LAST_INSERT_ID();
+    
+    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('Usuario', NEW.idEmpresa);
+    SET usuarioId = LAST_INSERT_ID();
+	
+    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('Desativado', NEW.idEmpresa);
+    
+    INSERT INTO monitora.permissoes_has_cargos (cargos_idCargo, permissoes_idPermissao) VALUES
+		(adminId, 1),
+		(adminId, 2),
+		(adminId, 3),
+		(adminId, 4),
+		(adminId, 5),
+		(adminId,6),
+		(usuarioId, 7);
+END $$
+
+DELIMITER ;
