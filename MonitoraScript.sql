@@ -34,7 +34,7 @@ CREATE TABLE empresas (
   ativo TINYINT(1),
   aprovada TINYINT(1),
   data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  fotoDePerfil VARCHAR(100) UNIQUE,
+  fotoDePerfil VARCHAR(255) DEFAULT 'fotoPerfil.svg',
   PRIMARY KEY (idEmpresa)
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE usuarios (
   email VARCHAR(100) NOT NULL UNIQUE,
   senha VARCHAR(255) NOT NULL,
   telefone CHAR(11) NOT NULL UNIQUE,
-  fotoUser VARCHAR(100) UNIQUE,
+  fotoUser VARCHAR(255) DEFAULT 'fotoPerfil.svg',
   data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FkCargo INT NOT NULL,
   FkEmpresa INT NOT NULL,
@@ -168,7 +168,7 @@ INSERT INTO monitora.permissoes (nomePermissao) VALUES
 -- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
 DELIMITER $$
 
-CREATE TRIGGER cargos
+CREATE TRIGGER cargosPadroes
 AFTER INSERT ON empresas
 FOR EACH ROW
 BEGIN
