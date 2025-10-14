@@ -1,5 +1,5 @@
 -- Criação do usuário e banco
-CREATE USER IF NOT EXISTS 'monitora'@'localhost' IDENTIFIED BY 'monitora@1234';
+CREATE USER IF NOT EXISTS 'monitora'@'%' IDENTIFIED BY 'monitora@1234';
 CREATE DATABASE IF NOT EXISTS monitora;
 GRANT SELECT, INSERT, UPDATE, DELETE ON monitora.* TO 'monitora'@'localhost';
 FLUSH PRIVILEGES;
