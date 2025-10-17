@@ -74,6 +74,7 @@ CREATE TABLE usuarios (
 -- -----------------------------------------------------
 CREATE TABLE datacenters (
   idDataCenter INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(45) NOT NULL UNIQUE,
   data_cadastro DATETIME,
   FkEmpresa INT NOT NULL,
   FkEndereco INT NOT NULL,
@@ -199,15 +200,23 @@ END $$
 DELIMITER ;
 
 -- Select tabelas para teste
-select * from usuarios;
-select * from empresas;
-select * from cargos;
-select * from permissoes;
-select * from permissoes_has_cargos;
+select * from monitora.endereco;
+select * from monitora.usuarios;
+select * from monitora.empresas;
+select * from monitora.datacenters;
+select * from monitora.servidores;
+select * from monitora.cargos;
+select * from monitora.permissoes;
+select * from monitora.permissoes_has_cargos;
 
 -- Criacao de Admins para teste e configurações:
-INSERT INTO empresas(nome, senha, cnpj, ativo, aprovada) VALUES
+INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
 ('admin', SHA2('@Admin123', 512), 12345678901234, 1, 1);
-INSERT INTO usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
+INSERT INTO monitora.usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
 ('admin', 'admin', 'admin@gmail.com', SHA2('@Admin123', 512), 11912345678, 1, 1);
-
+INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complemento) VALUES
+('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, NULL);
+INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
+('DataCenter - Teste', 1, 1);
+INSERT INTO monitora.servidores(nome, FkDataCenter) VALUES
+('Servidor - Teste', 1);
