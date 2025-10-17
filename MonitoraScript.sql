@@ -3,10 +3,11 @@ CREATE USER IF NOT EXISTS 'monitora'@'%' IDENTIFIED BY 'monitora@1234';
 CREATE DATABASE IF NOT EXISTS monitora;
 GRANT SELECT, INSERT, UPDATE, DELETE ON monitora.* TO 'monitora'@'localhost';
 FLUSH PRIVILEGES;
-drop database monitora;
+
 
 CREATE DATABASE IF NOT EXISTS monitora;
 USE monitora;
+
 -- -----------------------------------------------------
 -- Tabela endereco
 -- -----------------------------------------------------
@@ -196,3 +197,17 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- Select tabelas para teste
+select * from usuarios;
+select * from empresas;
+select * from cargos;
+select * from permissoes;
+select * from permissoes_has_cargos;
+
+-- Criacao de Admins para teste e configurações:
+INSERT INTO empresas(nome, senha, cnpj, ativo, aprovada) VALUES
+('admin', SHA2('@Admin123', 512), 12345678901234, 1, 1);
+INSERT INTO usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
+('admin', 'admin', 'admin@gmail.com', SHA2('@Admin123', 512), 11912345678, 1, 1);
+
