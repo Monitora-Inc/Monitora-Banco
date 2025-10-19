@@ -75,7 +75,7 @@ CREATE TABLE usuarios (
 CREATE TABLE datacenters (
   idDataCenter INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(45) NOT NULL UNIQUE,
-  data_cadastro DATETIME,
+  data_cadastro DATETIME DEFAULT NOW(),
   FkEmpresa INT NOT NULL,
   FkEndereco INT NOT NULL,
   PRIMARY KEY (idDataCenter),
@@ -89,7 +89,7 @@ CREATE TABLE datacenters (
 CREATE TABLE servidores (
   idServidor INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(100) NOT NULL,
-  data_cadastro DATETIME,
+  data_cadastro DATETIME DEFAULT NOW(),
   FkDataCenter INT NOT NULL,
   PRIMARY KEY (idServidor),
   CONSTRAINT fk_servidor_datacenter FOREIGN KEY (FkDataCenter) REFERENCES datacenters(idDataCenter)
@@ -215,7 +215,7 @@ INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
 INSERT INTO monitora.usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
 ('admin', 'admin', 'admin@gmail.com', SHA2('@Admin123', 512), 11912345678, 1, 1);
 INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complemento) VALUES
-('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, NULL);
+('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, 'Sem complemento');
 INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
 ('DataCenter - Teste', 1, 1);
 INSERT INTO monitora.servidores(nome, FkDataCenter) VALUES
