@@ -208,6 +208,9 @@ select * from monitora.servidores;
 select * from monitora.cargos;
 select * from monitora.permissoes;
 select * from monitora.permissoes_has_cargos;
+select * from monitora.nome_componente;
+select * from monitora.medida;
+select * from monitora.parametros;
 
 -- Criacao de Admins para teste e configurações:
 INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
@@ -220,3 +223,13 @@ INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
 ('DataCenter - Teste', 1, 1);
 INSERT INTO monitora.servidores(nome, FkDataCenter) VALUES
 ('Servidor - Teste', 1);
+
+-- INSERTS COMPONENTES GERAIS:
+INSERT INTO nome_componente (componente) VALUES
+('CPU'),
+('RAM'),
+('Disco'),
+('Rede');
+INSERT INTO medida (unidade_de_medida) VALUES
+('%'),
+('ms');
