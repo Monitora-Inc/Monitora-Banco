@@ -214,9 +214,14 @@ select * from monitora.parametros;
 
 -- Criacao de Admins para teste e configurações:
 INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
-('admin', SHA2('@Admin123', 512), 12345678901234, 1, 1);
+('monitora', SHA2('@Admin123', 512), 12345678901234, 1, 1);
 INSERT INTO monitora.usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
-('admin', 'admin', 'admin@gmail.com', SHA2('@Admin123', 512), 11912345678, 1, 1);
+('leonardo', 'borges', 'leonardo@gmail.com', SHA2('@Admin123', 512), 11912345671, 1, 1),
+('gustavo', 'anthony', 'gustavo@gmail.com', SHA2('@Admin123', 512), 11912345672, 1, 1),
+('ally', 'awada', 'ally@gmail.com', SHA2('@Admin123', 512), 11912345673, 1, 1),
+('pedro', 'borges', 'pedro@gmail.com', SHA2('@Admin123', 512), 11912345674, 1, 1),
+('maria', 'eduarda', 'maria@gmail.com', SHA2('@Admin123', 512), 11912345675, 1, 1);
+
 INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complemento) VALUES
 ('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, 'Sem complemento');
 INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
