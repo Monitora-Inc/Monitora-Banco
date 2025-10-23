@@ -1,7 +1,7 @@
 -- Criação do usuário e banco
 CREATE USER IF NOT EXISTS 'monitora'@'%' IDENTIFIED BY 'monitora@1234';
 CREATE DATABASE IF NOT EXISTS monitora;
-GRANT SELECT, INSERT, UPDATE, DELETE ON monitora.* TO 'monitora'@'localhost';
+GRANT ALL PRIVILEGES ON monitora.* TO 'monitora'@'localhost';
 FLUSH PRIVILEGES;
 
 
