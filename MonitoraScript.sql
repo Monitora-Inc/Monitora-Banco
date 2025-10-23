@@ -1,8 +1,6 @@
 -- Criação do usuário e banco
-CREATE DATABASE IF NOT EXISTS monitora;
-
 CREATE USER IF NOT EXISTS 'monitora'@'%' IDENTIFIED BY 'monitora@1234';
-GRANT ALL PRIVILEGES ON monitora.* TO 'monitora'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON monitora.* TO 'monitora'@'%';
 FLUSH PRIVILEGES;
 
 CREATE USER IF NOT EXISTS 'adminmonitora'@'%' IDENTIFIED BY 'admin1234!';
@@ -117,9 +115,9 @@ CREATE TABLE parametros (
   PRIMARY KEY (id)
 );
 -- -----------------------------------------------------
--- Tabela medida
+-- Tabela unidade_medida
 -- -----------------------------------------------------
-CREATE TABLE medida (
+CREATE TABLE unidade_medida (
   id INT NOT NULL AUTO_INCREMENT,
   unidade_de_medida VARCHAR(5) NOT NULL,
   PRIMARY KEY (id)
@@ -141,12 +139,12 @@ CREATE TABLE componentes_monitorados (
   idComponente INT NOT NULL AUTO_INCREMENT,
   nome_componente_id INT NOT NULL,
   servidores_idServidor INT NOT NULL,
-  medida_id INT NOT NULL,
+  unidade_medida_id INT NOT NULL,
   parametros_id INT NOT NULL,
   PRIMARY KEY (idComponente),
   CONSTRAINT fk_comp_nome FOREIGN KEY (nome_componente_id) REFERENCES nome_componente(id),
   CONSTRAINT fk_comp_servidor FOREIGN KEY (servidores_idServidor) REFERENCES servidores(idServidor),
-  CONSTRAINT fk_comp_medida FOREIGN KEY (medida_id) REFERENCES medida(id),
+  CONSTRAINT fk_comp_unidade_medida FOREIGN KEY (unidade_medida_id) REFERENCES unidade_medida(id),
   CONSTRAINT fk_comp_parametros FOREIGN KEY (parametros_id) REFERENCES parametros(id)
 );
 
@@ -213,7 +211,7 @@ select * from monitora.cargos;
 select * from monitora.permissoes;
 select * from monitora.permissoes_has_cargos;
 select * from monitora.nome_componente;
-select * from monitora.medida;
+select * from monitora.unidade_medida;
 select * from monitora.parametros;
 
 -- Criacao de Admins para teste e configurações:
@@ -239,6 +237,7 @@ INSERT INTO nome_componente (componente) VALUES
 ('RAM'),
 ('Disco'),
 ('Rede');
-INSERT INTO medida (unidade_de_medida) VALUES
+INSERT INTO unidade_medida (unidade_de_medida) VALUES
 ('%'),
 ('ms');
+
