@@ -1,9 +1,13 @@
 -- Criação do usuário e banco
-CREATE USER IF NOT EXISTS 'monitora'@'%' IDENTIFIED BY 'monitora@1234';
 CREATE DATABASE IF NOT EXISTS monitora;
+
+CREATE USER IF NOT EXISTS 'monitora'@'%' IDENTIFIED BY 'monitora@1234';
 GRANT ALL PRIVILEGES ON monitora.* TO 'monitora'@'localhost';
 FLUSH PRIVILEGES;
 
+CREATE USER IF NOT EXISTS 'adminmonitora'@'%' IDENTIFIED BY 'admin1234!';
+GRANT ALL PRIVILEGES ON *.* TO 'adminmonitora'@'%';
+FLUSH PRIVILEGES;
 
 CREATE DATABASE IF NOT EXISTS monitora;
 USE monitora;
