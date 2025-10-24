@@ -152,12 +152,11 @@ CREATE TABLE componentes_monitorados (
 -- Tabela permissoes_has_cargos
 -- -----------------------------------------------------
 CREATE TABLE permissoes_has_cargos (
-  id INT AUTO_INCREMENT,
   permissoes_idPermissao INT NOT NULL,
   cargos_idCargo INT NOT NULL,
-  PRIMARY KEY (id, permissoes_idPermissao, cargos_idCargo),
+  PRIMARY KEY (permissoes_idPermissao, cargos_idCargo),
   CONSTRAINT fk_phc_permissao FOREIGN KEY (permissoes_idPermissao) REFERENCES permissoes(idPermissao),
-  CONSTRAINT fk_phc_cargo FOREIGN KEY (cargos_idCargo) REFERENCES cargos(idCargo)
+  CONSTRAINT fk_phc_cargo FOREIGN KEY (cargos_idCargo) REFERENCES cargos(idCargo) ON DELETE CASCADE
 );
 
 INSERT INTO monitora.permissoes (nomePermissao) VALUES
@@ -234,8 +233,8 @@ INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complem
 ('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, 'Sem complemento');
 INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
 ('DataCenter - Teste', 1, 1);
-INSERT INTO monitora.servidores(nome, FkDataCenter) VALUES
-('Servidor - Teste', 1);
+INSERT INTO monitora.servidores(idServidor, nome, FkDataCenter) VALUES
+('a','Servidor - Teste', 1);
 
 -- INSERTS COMPONENTES GERAIS:
 INSERT INTO nome_componente (componente) VALUES
