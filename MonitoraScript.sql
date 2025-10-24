@@ -77,7 +77,7 @@ CREATE TABLE usuarios (
 CREATE TABLE datacenters (
   idDataCenter INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(45) NOT NULL UNIQUE,
-  data_cadastro DATETIME DEFAULT NOW(),
+  data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FkEmpresa INT NOT NULL,
   FkEndereco INT NOT NULL,
   PRIMARY KEY (idDataCenter),
@@ -89,9 +89,9 @@ CREATE TABLE datacenters (
 -- Tabela servidores
 -- -----------------------------------------------------
 CREATE TABLE servidores (
-  idServidor INT NOT NULL AUTO_INCREMENT,
+  idServidor VARCHAR(70) NOT NULL UNIQUE,
   nome VARCHAR(100) NOT NULL,
-  data_cadastro DATETIME DEFAULT NOW(),
+  data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FkDataCenter INT NOT NULL,
   PRIMARY KEY (idServidor),
   CONSTRAINT fk_servidor_datacenter FOREIGN KEY (FkDataCenter) REFERENCES datacenters(idDataCenter)
