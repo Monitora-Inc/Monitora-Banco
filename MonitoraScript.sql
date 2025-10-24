@@ -138,7 +138,7 @@ CREATE TABLE permissoes (
 CREATE TABLE componentes_monitorados (
   idComponente INT NOT NULL AUTO_INCREMENT,
   nome_componente_id INT NOT NULL,
-  servidores_idServidor INT NOT NULL,
+  servidores_idServidor VARCHAR(100) NOT NULL,
   unidade_medida_id INT NOT NULL,
   parametros_id INT NOT NULL,
   PRIMARY KEY (idComponente),
