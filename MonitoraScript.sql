@@ -4,7 +4,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON monitora.* TO 'monitora'@'%';
 FLUSH PRIVILEGES;
 
 CREATE USER IF NOT EXISTS 'adminmonitora'@'%' IDENTIFIED BY 'admin1234!';
-GRANT ALL PRIVILEGES ON *.* TO 'adminmonitora'@'%';
+GRANT ALL PRIVILEGES ON *.* TO 'adminmonitora'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
 CREATE DATABASE IF NOT EXISTS monitora;
@@ -77,7 +77,7 @@ CREATE TABLE usuarios (
 CREATE TABLE datacenters (
   idDataCenter INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(45) NOT NULL UNIQUE,
-  data_cadastro DATETIME DEFAULT NOW(),
+  data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FkEmpresa INT NOT NULL,
   FkEndereco INT NOT NULL,
   PRIMARY KEY (idDataCenter),
@@ -89,9 +89,9 @@ CREATE TABLE datacenters (
 -- Tabela servidores
 -- -----------------------------------------------------
 CREATE TABLE servidores (
-  idServidor INT NOT NULL AUTO_INCREMENT,
+  idServidor VARCHAR(70) NOT NULL UNIQUE,
   nome VARCHAR(100) NOT NULL,
-  data_cadastro DATETIME DEFAULT NOW(),
+  data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FkDataCenter INT NOT NULL,
   PRIMARY KEY (idServidor),
   CONSTRAINT fk_servidor_datacenter FOREIGN KEY (FkDataCenter) REFERENCES datacenters(idDataCenter)
@@ -138,7 +138,7 @@ CREATE TABLE permissoes (
 CREATE TABLE componentes_monitorados (
   idComponente INT NOT NULL AUTO_INCREMENT,
   nome_componente_id INT NOT NULL,
-  servidores_idServidor INT NOT NULL,
+  servidores_idServidor VARCHAR(100) NOT NULL,
   unidade_medida_id INT NOT NULL,
   parametros_id INT NOT NULL,
   PRIMARY KEY (idComponente),
@@ -162,12 +162,18 @@ CREATE TABLE permissoes_has_cargos (
 
 INSERT INTO monitora.permissoes (nomePermissao) VALUES
 	("CadastrarFuncionario"), -- Cadastrar novos funcionarios
-    ("RemoverFuncionario"), -- Remover o cadastro dos funcionarios
     ("EditarCargoFuncionario"), -- Editar o cargo de cada usuario
+    ("RemoverFuncionario"), -- Remover o cadastro dos funcionarios
+    ("EditarPerfil"), -- Editar as proprias informações
+    ("AdicionarServidor"), -- Adicionar novos servidores
+    ("EditarServidor"), -- Editar servidores
+    ("ExcluirServidor"), -- Excluir servidores
+    ("AdicionarDataCenter"), -- Adicionar novos Data Centers
+    ("EditarDataCenter"), -- Editar Data Centers
+    ("ExcluirDataCenter"), -- Excluir Data Centers
     ("AdicionarCargos"), -- Adicionar novos cargos
     ("ModificarCargos"), -- Modificar os cargos existentes
-    ("DeletarCargos"), -- Deletar cargos
-    ("EditarPerfil"); -- Editar as proprias informações
+    ("DeletarCargos"); -- Deletar cargos
 
 -- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
 DELIMITER $$
@@ -216,7 +222,7 @@ select * from monitora.parametros;
 
 -- Criacao de Admins para teste e configurações:
 INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
-('monitora', SHA2('@Admin123', 512), 12345678901234, 1, 1);
+('admin', SHA2('@Admin123', 512), 12345678901234, 1, 1);
 INSERT INTO monitora.usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
 ('leonardo', 'borges', 'leonardo@gmail.com', SHA2('@Admin123', 512), 11912345671, 1, 1),
 ('gustavo', 'anthony', 'gustavo@gmail.com', SHA2('@Admin123', 512), 11912345672, 1, 1),
@@ -240,4 +246,3 @@ INSERT INTO nome_componente (componente) VALUES
 INSERT INTO unidade_medida (unidade_de_medida) VALUES
 ('%'),
 ('ms');
-
