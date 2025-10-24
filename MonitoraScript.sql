@@ -162,12 +162,18 @@ CREATE TABLE permissoes_has_cargos (
 
 INSERT INTO monitora.permissoes (nomePermissao) VALUES
 	("CadastrarFuncionario"), -- Cadastrar novos funcionarios
-    ("RemoverFuncionario"), -- Remover o cadastro dos funcionarios
     ("EditarCargoFuncionario"), -- Editar o cargo de cada usuario
+    ("RemoverFuncionario"), -- Remover o cadastro dos funcionarios
+    ("EditarPerfil"), -- Editar as proprias informações
+    ("AdicionarServidor"), -- Adicionar novos servidores
+    ("EditarServidor"), -- Editar servidores
+    ("ExcluirServidor"), -- Excluir servidores
+    ("AdicionarDataCenter"), -- Adicionar novos Data Centers
+    ("EditarDataCenter"), -- Editar Data Centers
+    ("ExcluirDataCenter"), -- Excluir Data Centers
     ("AdicionarCargos"), -- Adicionar novos cargos
     ("ModificarCargos"), -- Modificar os cargos existentes
-    ("DeletarCargos"), -- Deletar cargos
-    ("EditarPerfil"); -- Editar as proprias informações
+    ("DeletarCargos"); -- Deletar cargos
 
 -- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
 DELIMITER $$
