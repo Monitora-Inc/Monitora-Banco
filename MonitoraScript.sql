@@ -216,7 +216,7 @@ select * from monitora.parametros;
 
 -- Criacao de Admins para teste e configurações:
 INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
-('monitora', SHA2('@Admin123', 512), 12345678901234, 1, 1);
+('admin', SHA2('@Admin123', 512), 12345678901234, 1, 1);
 INSERT INTO monitora.usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
 ('leonardo', 'borges', 'leonardo@gmail.com', SHA2('@Admin123', 512), 11912345671, 1, 1),
 ('gustavo', 'anthony', 'gustavo@gmail.com', SHA2('@Admin123', 512), 11912345672, 1, 1),
