@@ -174,38 +174,6 @@ INSERT INTO monitora.permissoes (nomePermissao) VALUES
     ("ModificarCargos"), -- Modificar os cargos existentes
     ("DeletarCargos"); -- Deletar cargos
 
--- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
-DELIMITER $$
-
-CREATE TRIGGER cargosPadroes
-AFTER INSERT ON empresas
-FOR EACH ROW
-BEGIN
-
-	-- Criando variaveis para automação funcionar da maneira correta
-	DECLARE adminId INT;
-    DECLARE usuarioId INT;
-	
-    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('ADMINISTRADOR', NEW.idEmpresa);
-	SET adminId = LAST_INSERT_ID();
-
-    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('Usuario', NEW.idEmpresa);
-    SET usuarioId = LAST_INSERT_ID();
-	
-    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('Desativado', NEW.idEmpresa);
-    
-    INSERT INTO monitora.permissoes_has_cargos (cargos_idCargo, permissoes_idPermissao) VALUES
-		(adminId, 1),
-		(adminId, 2),
-		(adminId, 3),
-		(adminId, 4),
-		(adminId, 5),
-		(adminId,6),
-		(usuarioId, 7);
-END $$
-
-DELIMITER ;
-
 -- Select tabelas para teste
 select * from monitora.endereco;
 select * from monitora.usuarios;
@@ -245,3 +213,87 @@ INSERT INTO nome_componente (componente) VALUES
 INSERT INTO unidade_medida (unidade_de_medida) VALUES
 ('%'),
 ('ms');
+
+
+-- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
+DELIMITER $$
+
+CREATE TRIGGER cargosPadroes
+AFTER INSERT ON empresas
+FOR EACH ROW
+BEGIN
+
+	-- Criando variaveis para automação funcionar da maneira correta
+	DECLARE adminId INT;
+    DECLARE usuarioId INT;
+	
+    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('ADMINISTRADOR', NEW.idEmpresa);
+	SET adminId = LAST_INSERT_ID();
+
+    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('Usuario', NEW.idEmpresa);
+    SET usuarioId = LAST_INSERT_ID();
+	
+    INSERT INTO cargos (nome_cargo, FkEmpresa) VALUES ('Desativado', NEW.idEmpresa);
+    
+    INSERT INTO monitora.permissoes_has_cargos (cargos_idCargo, permissoes_idPermissao) VALUES
+		(adminId, 1),
+		(adminId, 2),
+		(adminId, 3),
+		(adminId, 4),
+		(adminId, 5),
+		(adminId,6),
+		(usuarioId, 7);
+END $$
+
+DELIMITER ;
+CREATE TRIGGER medidasPadroes
+AFTER INSERT ON servidores
+FOR EACH ROW
+BEGIN
+    DECLARE idCPU INT DEFAULT 0;
+    DECLARE idRAM INT DEFAULT 0;
+    DECLARE idDISCO INT DEFAULT 0;
+    DECLARE idREDE INT DEFAULT 0;
+    DECLARE idPorcentagem INT DEFAULT 0;
+    DECLARE idMs INT DEFAULT 0;
+    DECLARE idParamCPU INT;
+    DECLARE idParamRAM INT;
+    DECLARE idParamDISCO INT;
+    DECLARE idParamREDEms INT;
+    DECLARE idParamREDEpercent INT;
+    
+    SELECT id INTO idCPU FROM nome_componente WHERE componente = 'CPU';
+    SELECT id INTO idRAM FROM nome_componente WHERE componente = 'RAM';
+    SELECT id INTO idDISCO FROM nome_componente WHERE componente = 'Disco';
+    SELECT id INTO idREDE FROM nome_componente WHERE componente = 'Rede';
+
+    SELECT id INTO idPorcentagem FROM unidade_medida WHERE unidade_de_medida = '%';
+    SELECT id INTO idMs FROM unidade_medida WHERE unidade_de_medida = 'ms';
+
+    -- Insere parâmetros padrões
+	INSERT INTO parametros (limite) VALUES (90);
+    SET idParamCPU = LAST_INSERT_ID();
+
+    INSERT INTO parametros (limite) VALUES (85);
+    SET idParamRAM = LAST_INSERT_ID();
+
+    INSERT INTO parametros (limite) VALUES (95);
+    SET idParamDISCO = LAST_INSERT_ID();
+
+    INSERT INTO parametros (limite) VALUES (5);
+    SET idParamREDEms = LAST_INSERT_ID();
+	
+    INSERT INTO parametros (limite) VALUES (90);
+    SET idParamREDEpercent = LAST_INSERT_ID();
+    
+    -- Relaciona os componentes monitorados ao novo servidor
+    INSERT INTO componentes_monitorados (nome_componente_id, servidores_idServidor, unidade_medida_id, parametros_id)
+    VALUES
+        (idCPU, NEW.idServidor, idPorcentagem, idParamCPU),
+        (idRAM, NEW.idServidor, idPorcentagem, idParamRAM),
+        (idDISCO, NEW.idServidor, idPorcentagem, idParamDISCO),
+		(idREDE, NEW.idServidor, idPorcentagem, idParamREDEpercent),
+        (idREDE, NEW.idServidor, idMs, idParamREDEms);
+END$$
+
+DELIMITER ;
