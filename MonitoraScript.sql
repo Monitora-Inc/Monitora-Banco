@@ -174,45 +174,9 @@ INSERT INTO monitora.permissoes (nomePermissao) VALUES
     ("ModificarCargos"), -- Modificar os cargos existentes
     ("DeletarCargos"); -- Deletar cargos
 
--- Select tabelas para teste
-select * from monitora.endereco;
-select * from monitora.usuarios;
-select * from monitora.empresas;
-select * from monitora.datacenters;
-select * from monitora.servidores;
-select * from monitora.cargos;
-select * from monitora.permissoes;
-select * from monitora.permissoes_has_cargos;
-select * from monitora.nome_componente;
-select * from monitora.unidade_medida;
-select * from monitora.parametros;
 
--- Criacao de Admins para teste e configurações:
-INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
-('admin', SHA2('@Admin123', 512), 12345678901234, 1, 1);
-INSERT INTO monitora.usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
-('leonardo', 'borges', 'leonardo@gmail.com', SHA2('@Admin123', 512), 11912345671, 1, 1),
-('gustavo', 'anthony', 'gustavo@gmail.com', SHA2('@Admin123', 512), 11912345672, 1, 1),
-('ally', 'awada', 'ally@gmail.com', SHA2('@Admin123', 512), 11912345673, 1, 1),
-('pedro', 'borges', 'pedro@gmail.com', SHA2('@Admin123', 512), 11912345674, 1, 1),
-('maria', 'eduarda', 'maria@gmail.com', SHA2('@Admin123', 512), 11912345675, 1, 1);
 
-INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complemento) VALUES
-('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, 'Sem complemento');
-INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
-('DataCenter - Teste', 1, 1);
-INSERT INTO monitora.servidores(idServidor, nome, FkDataCenter) VALUES
-('a','Servidor - Teste', 1);
 
--- INSERTS COMPONENTES GERAIS:
-INSERT INTO nome_componente (componente) VALUES
-('CPU'),
-('RAM'),
-('Disco'),
-('Rede');
-INSERT INTO unidade_medida (unidade_de_medida) VALUES
-('%'),
-('ms');
 
 
 -- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
@@ -246,6 +210,9 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+DELIMITER $$
+
 CREATE TRIGGER medidasPadroes
 AFTER INSERT ON servidores
 FOR EACH ROW
@@ -297,3 +264,46 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+-- Criacao de Admins para teste e configurações:
+INSERT INTO monitora.empresas(nome, senha, cnpj, ativo, aprovada) VALUES
+('admin', SHA2('@Admin123', 512), 12345678901234, 1, 1);
+
+INSERT INTO monitora.usuarios(nome, sobrenome, email, senha, telefone, FkCargo, FkEmpresa) VALUES
+('leonardo', 'borges', 'leonardo@gmail.com', SHA2('@Admin123', 512), 11912345671, 1, 1),
+('gustavo', 'anthony', 'gustavo@gmail.com', SHA2('@Admin123', 512), 11912345672, 1, 1),
+('ally', 'awada', 'ally@gmail.com', SHA2('@Admin123', 512), 11912345673, 1, 1),
+('pedro', 'borges', 'pedro@gmail.com', SHA2('@Admin123', 512), 11912345674, 1, 1),
+('maria', 'eduarda', 'maria@gmail.com', SHA2('@Admin123', 512), 11912345675, 1, 1);
+
+
+-- INSERTS COMPONENTES GERAIS:
+INSERT INTO nome_componente (componente) VALUES
+('CPU'),
+('RAM'),
+('Disco'),
+('Rede');
+INSERT INTO unidade_medida (unidade_de_medida) VALUES
+('%'),
+('ms');
+
+INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complemento) VALUES
+('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, 'Sem complemento');
+INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
+('DataCenter - Teste', 1, 1);
+INSERT INTO monitora.servidores(idServidor, nome, FkDataCenter) VALUES
+('abcde', 'Servidor - Teste', 1);
+
+
+-- Select tabelas para teste
+select * from monitora.endereco;
+select * from monitora.usuarios;
+select * from monitora.empresas;
+select * from monitora.datacenters;
+select * from monitora.servidores;
+select * from monitora.cargos;
+select * from monitora.permissoes;
+select * from monitora.permissoes_has_cargos;
+select * from monitora.nome_componente;
+select * from monitora.unidade_medida;
+select * from monitora.parametros;
