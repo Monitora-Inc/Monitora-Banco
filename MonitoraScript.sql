@@ -79,10 +79,10 @@ CREATE TABLE datacenters (
   nome VARCHAR(45) NOT NULL UNIQUE,
   data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FkEmpresa INT NOT NULL,
-  FkEndereco INT NOT NULL,
+  FkEndereco INT UNIQUE NOT NULL,
   PRIMARY KEY (idDataCenter),
   CONSTRAINT fk_datacenter_empresa FOREIGN KEY (FkEmpresa) REFERENCES empresas(idEmpresa),
-  CONSTRAINT fk_datacenter_endereco FOREIGN KEY (FkEndereco) REFERENCES endereco(idEndereco)
+  CONSTRAINT fk_datacenter_endereco FOREIGN KEY (FkEndereco) REFERENCES endereco(idEndereco) ON DELETE CASCADE
 );
 
 -- -----------------------------------------------------
@@ -107,9 +107,18 @@ CREATE TABLE nome_componente (
 );
 
 -- -----------------------------------------------------
--- Tabela parametros
+-- Tabela parametros críticos
 -- -----------------------------------------------------
-CREATE TABLE parametros (
+CREATE TABLE parametros_critico (
+  id INT NOT NULL AUTO_INCREMENT,
+  limite INT NOT NULL,
+  PRIMARY KEY (id)
+);
+
+-- -----------------------------------------------------
+-- Tabela parametros atenção
+-- -----------------------------------------------------
+CREATE TABLE parametros_atencao (
   id INT NOT NULL AUTO_INCREMENT,
   limite INT NOT NULL,
   PRIMARY KEY (id)
@@ -140,12 +149,14 @@ CREATE TABLE componentes_monitorados (
   nome_componente_id INT NOT NULL,
   servidores_idServidor VARCHAR(100) NOT NULL,
   unidade_medida_id INT NOT NULL,
-  parametros_id INT NOT NULL,
+  parametros_critico_id INT NOT NULL,
+  parametros_atencao_id INT NOT NULL,
   PRIMARY KEY (idComponente),
   CONSTRAINT fk_comp_nome FOREIGN KEY (nome_componente_id) REFERENCES nome_componente(id),
   CONSTRAINT fk_comp_servidor FOREIGN KEY (servidores_idServidor) REFERENCES servidores(idServidor),
   CONSTRAINT fk_comp_unidade_medida FOREIGN KEY (unidade_medida_id) REFERENCES unidade_medida(id),
-  CONSTRAINT fk_comp_parametros FOREIGN KEY (parametros_id) REFERENCES parametros(id)
+  CONSTRAINT fk_comp_parametros_criticos FOREIGN KEY (parametros_critico_id) REFERENCES parametros_critico(id),
+  CONSTRAINT fk_comp_parametros_atencao FOREIGN KEY (parametros_atencao_id) REFERENCES parametros_atencao(id)
 );
 
 -- -----------------------------------------------------
@@ -173,11 +184,6 @@ INSERT INTO monitora.permissoes (nomePermissao) VALUES
     ("AdicionarCargos"), -- Adicionar novos cargos
     ("ModificarCargos"), -- Modificar os cargos existentes
     ("DeletarCargos"); -- Deletar cargos
-
-
-
-
-
 
 -- TRIGGER PARA CRIAR OS CARGOS PADRÕES AO CADASTRAR UMA NOVA EMPRESA
 DELIMITER $$
@@ -223,11 +229,16 @@ BEGIN
     DECLARE idREDE INT DEFAULT 0;
     DECLARE idPorcentagem INT DEFAULT 0;
     DECLARE idMs INT DEFAULT 0;
-    DECLARE idParamCPU INT;
-    DECLARE idParamRAM INT;
-    DECLARE idParamDISCO INT;
-    DECLARE idParamREDEms INT;
-    DECLARE idParamREDEpercent INT;
+    DECLARE idParamCriticoCPU INT;
+    DECLARE idParamCriticoRAM INT;
+    DECLARE idParamCriticoDISCO INT;
+    DECLARE idParamCriticoREDEms INT;
+    DECLARE idParamCriticoREDEpercent INT;
+    DECLARE idParamAtencaoCPU INT;
+    DECLARE idParamAtencaoRAM INT;
+    DECLARE idParamAtencaoDISCO INT;
+    DECLARE idParamAtencaoREDEms INT;
+    DECLARE idParamAtencaoREDEpercent INT;
     
     SELECT id INTO idCPU FROM nome_componente WHERE componente = 'CPU';
     SELECT id INTO idRAM FROM nome_componente WHERE componente = 'RAM';
@@ -237,30 +248,46 @@ BEGIN
     SELECT id INTO idPorcentagem FROM unidade_medida WHERE unidade_de_medida = '%';
     SELECT id INTO idMs FROM unidade_medida WHERE unidade_de_medida = 'ms';
 
-    -- Insere parâmetros padrões
-	INSERT INTO parametros (limite) VALUES (90);
-    SET idParamCPU = LAST_INSERT_ID();
+    -- Insere parâmetros críticos padrões
+	INSERT INTO parametros_critico (limite) VALUES (90);
+    SET idParamCriticoCPU = LAST_INSERT_ID();
 
-    INSERT INTO parametros (limite) VALUES (85);
-    SET idParamRAM = LAST_INSERT_ID();
+    INSERT INTO parametros_critico (limite) VALUES (85);
+    SET idParamCriticoRAM = LAST_INSERT_ID();
 
-    INSERT INTO parametros (limite) VALUES (95);
-    SET idParamDISCO = LAST_INSERT_ID();
+    INSERT INTO parametros_critico (limite) VALUES (95);
+    SET idParamCriticoDISCO = LAST_INSERT_ID();
 
-    INSERT INTO parametros (limite) VALUES (5);
-    SET idParamREDEms = LAST_INSERT_ID();
+    INSERT INTO parametros_critico (limite) VALUES (0.05);
+    SET idParamCriticoREDEms = LAST_INSERT_ID();
 	
-    INSERT INTO parametros (limite) VALUES (90);
-    SET idParamREDEpercent = LAST_INSERT_ID();
+    INSERT INTO parametros_critico (limite) VALUES (90);
+    SET idParamCriticoREDEpercent = LAST_INSERT_ID();
+    
+    -- Insere parâmetros de atenção padrões    
+    INSERT INTO parametros_atencao (limite) VALUES (80);
+    SET idParamAtencaoCPU = LAST_INSERT_ID();
+
+    INSERT INTO parametros_atencao (limite) VALUES (75);
+    SET idParamAtencaoRAM = LAST_INSERT_ID();
+
+    INSERT INTO parametros_atencao (limite) VALUES (85);
+    SET idParamAtencaoDISCO = LAST_INSERT_ID();
+
+    INSERT INTO parametros_atencao (limite) VALUES (0.04);
+    SET idParamAtencaoREDEms = LAST_INSERT_ID();
+	
+    INSERT INTO parametros_atencao (limite) VALUES (80);
+    SET idParamAtencaoREDEpercent = LAST_INSERT_ID();
     
     -- Relaciona os componentes monitorados ao novo servidor
-    INSERT INTO componentes_monitorados (nome_componente_id, servidores_idServidor, unidade_medida_id, parametros_id)
+    INSERT INTO componentes_monitorados (nome_componente_id, servidores_idServidor, unidade_medida_id, parametros_critico_id, parametros_atencao_id)
     VALUES
-        (idCPU, NEW.idServidor, idPorcentagem, idParamCPU),
-        (idRAM, NEW.idServidor, idPorcentagem, idParamRAM),
-        (idDISCO, NEW.idServidor, idPorcentagem, idParamDISCO),
-		(idREDE, NEW.idServidor, idPorcentagem, idParamREDEpercent),
-        (idREDE, NEW.idServidor, idMs, idParamREDEms);
+        (idCPU, NEW.idServidor, idPorcentagem, idParamCriticoCPU, idParamAtencaoCPU),
+        (idRAM, NEW.idServidor, idPorcentagem, idParamCriticoRAM, idParamAtencaoRAM),
+        (idDISCO, NEW.idServidor, idPorcentagem, idParamCriticoDISCO, idParamAtencaoDISCO),
+		(idREDE, NEW.idServidor, idPorcentagem, idParamCriticoREDEpercent, idParamAtencaoREDEpercent),
+        (idREDE, NEW.idServidor, idMs, idParamCriticoREDEms, idParamAtencaoREDEms);
 END$$
 
 DELIMITER ;
@@ -306,4 +333,6 @@ select * from monitora.permissoes;
 select * from monitora.permissoes_has_cargos;
 select * from monitora.nome_componente;
 select * from monitora.unidade_medida;
-select * from monitora.parametros;
+select * from monitora.parametros_critico;
+select * from monitora.parametros_atencao;
+select * from monitora.componentes_monitorados;
