@@ -163,9 +163,10 @@ CREATE TABLE componentes_monitorados (
 -- Tabela permissoes_has_cargos
 -- -----------------------------------------------------
 CREATE TABLE permissoes_has_cargos (
+  permissoes_idPermissao INT NOT NULL,
   cargos_idCargo INT NOT NULL,
   PRIMARY KEY (permissoes_idPermissao, cargos_idCargo),
-  CONSTRAINT fk_phc_permissao FOREIGN KEY (permissoes_idPermissao) REFERENCES permissoes(idPermissao),
+  CONSTRAINT fk_phc_permissao FOREIGN KEY (permissoes_idPermissao) REFERENCES permissoes(idPermissao) ON DELETE CASCADE,
   CONSTRAINT fk_phc_cargo FOREIGN KEY (cargos_idCargo) REFERENCES cargos(idCargo) ON DELETE CASCADE
 );
 
