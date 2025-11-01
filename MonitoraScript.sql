@@ -111,7 +111,7 @@ CREATE TABLE nome_componente (
 -- -----------------------------------------------------
 CREATE TABLE parametros_critico (
   id INT NOT NULL AUTO_INCREMENT,
-  limite DECIMAL(3, 5) NOT NULL,
+  limite DECIMAL(5, 3) NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -120,7 +120,7 @@ CREATE TABLE parametros_critico (
 -- -----------------------------------------------------
 CREATE TABLE parametros_atencao (
   id INT NOT NULL AUTO_INCREMENT,
-  limite DECIMAL(3, 5) NOT NULL,
+  limite DECIMAL(5, 3) NOT NULL,
   PRIMARY KEY (id)
 );
 -- -----------------------------------------------------
