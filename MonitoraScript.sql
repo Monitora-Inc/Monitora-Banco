@@ -145,7 +145,6 @@ CREATE TABLE permissoes (
 -- Tabela componentes_monitorados
 -- -----------------------------------------------------
 CREATE TABLE componentes_monitorados (
-  idComponente INT NOT NULL AUTO_INCREMENT,
   nome_componente_id INT NOT NULL,
   servidores_idServidor VARCHAR(100) NOT NULL,
   unidade_medida_id INT NOT NULL,
@@ -163,7 +162,6 @@ CREATE TABLE componentes_monitorados (
 -- Tabela permissoes_has_cargos
 -- -----------------------------------------------------
 CREATE TABLE permissoes_has_cargos (
-  permissoes_idPermissao INT NOT NULL,
   cargos_idCargo INT NOT NULL,
   PRIMARY KEY (permissoes_idPermissao, cargos_idCargo),
   CONSTRAINT fk_phc_permissao FOREIGN KEY (permissoes_idPermissao) REFERENCES permissoes(idPermissao),
