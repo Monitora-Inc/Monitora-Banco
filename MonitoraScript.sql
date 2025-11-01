@@ -152,11 +152,11 @@ CREATE TABLE componentes_monitorados (
   parametros_critico_id INT NOT NULL,
   parametros_atencao_id INT NOT NULL,
   PRIMARY KEY (idComponente),
-  CONSTRAINT fk_comp_nome FOREIGN KEY (nome_componente_id) REFERENCES nome_componente(id),
-  CONSTRAINT fk_comp_servidor FOREIGN KEY (servidores_idServidor) REFERENCES servidores(idServidor),
-  CONSTRAINT fk_comp_unidade_medida FOREIGN KEY (unidade_medida_id) REFERENCES unidade_medida(id),
-  CONSTRAINT fk_comp_parametros_criticos FOREIGN KEY (parametros_critico_id) REFERENCES parametros_critico(id),
-  CONSTRAINT fk_comp_parametros_atencao FOREIGN KEY (parametros_atencao_id) REFERENCES parametros_atencao(id)
+  CONSTRAINT fk_comp_nome FOREIGN KEY (nome_componente_id) REFERENCES nome_componente(id) ON DELETE CASCADE,
+  CONSTRAINT fk_comp_servidor FOREIGN KEY (servidores_idServidor) REFERENCES servidores(idServidor) ON DELETE CASCADE,
+  CONSTRAINT fk_comp_unidade_medida FOREIGN KEY (unidade_medida_id) REFERENCES unidade_medida(id) ON DELETE CASCADE,
+  CONSTRAINT fk_comp_parametros_criticos FOREIGN KEY (parametros_critico_id) REFERENCES parametros_critico(id) ON DELETE CASCADE,
+  CONSTRAINT fk_comp_parametros_atencao FOREIGN KEY (parametros_atencao_id) REFERENCES parametros_atencao(id) ON DELETE CASCADE
 );
 
 -- -----------------------------------------------------
