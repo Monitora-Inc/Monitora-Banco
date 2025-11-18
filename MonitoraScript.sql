@@ -15,6 +15,8 @@ USE monitora;
 -- -----------------------------------------------------
 CREATE TABLE endereco (
   idEndereco INT NOT NULL AUTO_INCREMENT,
+  latitude VARCHAR(240),
+  longitude VARCHAR(240),	
   pais VARCHAR(60),
   estado VARCHAR(60),
   cidade VARCHAR(60),
