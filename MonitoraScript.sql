@@ -99,6 +99,7 @@ CREATE TABLE servidores (
   CONSTRAINT fk_servidor_datacenter FOREIGN KEY (FkDataCenter) REFERENCES datacenters(idDataCenter)
 );
 
+
 -- -----------------------------------------------------
 -- Tabela nome_componente
 -- -----------------------------------------------------
@@ -230,17 +231,18 @@ BEGIN
     DECLARE idDISCO INT DEFAULT 0;
     DECLARE idREDE INT DEFAULT 0;
     DECLARE idPorcentagem INT DEFAULT 0;
+	DECLARE idMb INT DEFAULT 0;
     DECLARE idMs INT DEFAULT 0;
     DECLARE idParamCriticoCPU INT;
     DECLARE idParamCriticoRAM INT;
     DECLARE idParamCriticoDISCO INT;
     DECLARE idParamCriticoREDEms INT;
-    DECLARE idParamCriticoREDEpercent INT;
+    DECLARE idParamCriticoREDEmb INT;
     DECLARE idParamAtencaoCPU INT;
     DECLARE idParamAtencaoRAM INT;
     DECLARE idParamAtencaoDISCO INT;
     DECLARE idParamAtencaoREDEms INT;
-    DECLARE idParamAtencaoREDEpercent INT;
+    DECLARE idParamAtencaoREDEmb INT;
     
     SELECT id INTO idCPU FROM nome_componente WHERE componente = 'CPU';
     SELECT id INTO idRAM FROM nome_componente WHERE componente = 'RAM';
@@ -248,6 +250,7 @@ BEGIN
     SELECT id INTO idREDE FROM nome_componente WHERE componente = 'Rede';
 
     SELECT id INTO idPorcentagem FROM unidade_medida WHERE unidade_de_medida = '%';
+	SELECT id INTO idMb FROM unidade_medida WHERE unidade_de_medida = 'mb';
     SELECT id INTO idMs FROM unidade_medida WHERE unidade_de_medida = 'ms';
 
     -- Insere parâmetros críticos padrões
@@ -264,7 +267,7 @@ BEGIN
     SET idParamCriticoREDEms = LAST_INSERT_ID();
 	
     INSERT INTO parametros_critico (limite) VALUES (90);
-    SET idParamCriticoREDEpercent = LAST_INSERT_ID();
+    SET idParamCriticoREDEmb = LAST_INSERT_ID();
     
     -- Insere parâmetros de atenção padrões    
     INSERT INTO parametros_atencao (limite) VALUES (80);
@@ -280,7 +283,7 @@ BEGIN
     SET idParamAtencaoREDEms = LAST_INSERT_ID();
 	
     INSERT INTO parametros_atencao (limite) VALUES (80);
-    SET idParamAtencaoREDEpercent = LAST_INSERT_ID();
+    SET idParamAtencaoREDEmb = LAST_INSERT_ID();
     
     -- Relaciona os componentes monitorados ao novo servidor
     INSERT INTO componentes_monitorados (nome_componente_id, servidores_idServidor, unidade_medida_id, parametros_critico_id, parametros_atencao_id)
@@ -288,7 +291,7 @@ BEGIN
         (idCPU, NEW.idServidor, idPorcentagem, idParamCriticoCPU, idParamAtencaoCPU),
         (idRAM, NEW.idServidor, idPorcentagem, idParamCriticoRAM, idParamAtencaoRAM),
         (idDISCO, NEW.idServidor, idPorcentagem, idParamCriticoDISCO, idParamAtencaoDISCO),
-		(idREDE, NEW.idServidor, idPorcentagem, idParamCriticoREDEpercent, idParamAtencaoREDEpercent),
+		(idREDE, NEW.idServidor, idMb, idParamCriticoREDEmb, idParamAtencaoREDEmb),
         (idREDE, NEW.idServidor, idMs, idParamCriticoREDEms, idParamAtencaoREDEms);
 END$$
 
@@ -314,14 +317,15 @@ INSERT INTO nome_componente (componente) VALUES
 ('Rede');
 INSERT INTO unidade_medida (unidade_de_medida) VALUES
 ('%'),
+('mb'),
 ('ms');
 
-INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complemento) VALUES
+/*INSERT INTO monitora.endereco(pais, estado, cidade, bairro, rua, numero, complemento) VALUES
 ('Brasil', 'SP', 'São Paulo', 'República', 'Av. São João', 677, 'Sem complemento');
 INSERT INTO monitora.datacenters(nome, FkEmpresa, FkEndereco) VALUES
 ('DataCenter - Teste', 1, 1);
 INSERT INTO monitora.servidores(idServidor, nome, FkDataCenter) VALUES
-('abcde', 'Servidor - Teste', 1);
+('abcde', 'Servidor - Teste', 1);*/
 
 
 -- Select tabelas para teste
